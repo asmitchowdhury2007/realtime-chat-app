@@ -63,18 +63,23 @@
         let input = document.querySelector("#input");
         let form = document.querySelector("#form");
         let messages = document.querySelector("#messages");
+
+        socket.on("chat messages", (message) => {
+            const li = document.createElement("li");
+            li.innerText = message;
+            messages.appendChild(li);
+            messages.scrollTop = messages.scrollHeight;
+        });
+
         form.addEventListener("submit", (data)=>{
             data.preventDefault();
-            if(input.value === ""){
+            const message = input.value.trim();
+            if(message === ""){
                 return ;
             }
             else{
-                const li = document.createElement("li");
-                li.innerText= input.value;
-                messages.appendChild(li);
-                const message = input.value.trim();
                 socket.emit("chat messages", message);
-                input.value = '';
+                input.value = "";
             }
         });
         
