@@ -60,6 +60,7 @@
     <script>
         const socket = io();
         console.log("Connected");
+       
         let input = document.querySelector("#input");
         let form = document.querySelector("#form");
         let messages = document.querySelector("#messages");
@@ -69,17 +70,20 @@
             li.innerText = message;
             messages.appendChild(li);
             messages.scrollTop = messages.scrollHeight;
+            
         });
 
         form.addEventListener("submit", (data)=>{
             data.preventDefault();
+            
             const message = input.value.trim();
             if(message === ""){
                 return ;
             }
             else{
+                
                 socket.emit("chat messages", message);
-                input.value = "";
+                input.value ="";
             }
         });
         

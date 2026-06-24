@@ -16,7 +16,12 @@ app.get('/', (req, res) => {
 });
 
 io.on("connection", (socket)=>{
-    //console.log("A new user entered");
+    console.log("A new user entered");
+    socket.on("chat messages", (msg) => {
+        console.log('Message received:', msg);
+        // Broadcast the message to all connected clients
+        io.emit("chat messages", msg);
+    });
     
 })
 
