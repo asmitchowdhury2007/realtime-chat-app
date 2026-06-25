@@ -47,10 +47,20 @@
         button:hover {
             background: #45a049;
         }
+        .system-message {
+            color: #666;
+            font-style: italic;
+            font-size: 0.9em;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <h1>Simple Chat</h1>
+    <div id="username-container">
+        <input type="text" id="username-input" placeholder="Enter your username" />
+        <button id="set-username">Set Username</button>
+    </div>
     <ul id="messages"></ul>
     <form id="form" action="#">
         <input id="input" autocomplete="off" placeholder="Type your message..." />
@@ -60,18 +70,24 @@
     <script>
         const socket = io();
         console.log("Connected");
-       
+        //create username
+        const username = document.querySelector("#username-input");
+        const setUsernameButton = document.querySelector("#set-username");
+        let currentUsername = "Anonymous";
+        setUsernameButton.addEventListener("click", (data)=>{
+            const newUsername = username.value;
+            if(newUsername){
+                socket.emit('set username',newUsername);
+                currentUsername = newUsername;
+            }
+            
+        })
+        //form
         let input = document.querySelector("#input");
         let form = document.querySelector("#form");
         let messages = document.querySelector("#messages");
 
-        socket.on("chat messages", (message) => {
-            const li = document.createElement("li");
-            li.innerText = message;
-            messages.appendChild(li);
-            messages.scrollTop = messages.scrollHeight;
-            
-        });
+        
 
         form.addEventListener("submit", (data)=>{
             data.preventDefault();
@@ -86,6 +102,30 @@
                 input.value ="";
             }
         });
+        socket.on("chat messages", (data) => {
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+            messages.appendChild(li);
+            messages.scrollTop = messages.scrollHeight;
+            
+        });
+        socket.on('change',(data)=>{
+            const li = document.createElement("li");
+            li.className = 'system-message';
+            if(data.oldusername === "Anonymous"){
+                li.innerText =`${data.newusername} has joined the chat`;
+            }
+            else{
+                li.innerText = `${data.oldusername} has changed to ${data.newusername}`;
+            }
+            messsages.appendChild(li);
+        });
+        
+        socket.on('left room', (data)=>{
+            const li = document.createElement("li");
+            li.className = 'system-message';
+            li.innerText =`${data.username} has left the chat`;
+        })
         
     </script>
 </body>

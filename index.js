@@ -17,11 +17,34 @@ app.get('/', (req, res) => {
 
 io.on("connection", (socket)=>{
     console.log("A new user entered");
+
+    socket.username = "Anonymous";
+
     socket.on("chat messages", (msg) => {
-        console.log('Message received:', msg);
-        // Broadcast the message to all connected clients
-        io.emit("chat messages", msg);
+        io.emit("chat messages",{
+            username: socket.username,
+            message: msg,
+            timestamp: new Date().toISOString(),
+        });
     });
+
+    socket.on('set username', (newUsername)=>{
+        const oldusername = socket.username;
+        socket.username = newUsername;
+        io.emit('change',{
+            oldusername : oldusername,
+            newusername : socket.username,
+
+        });
+    });
+    
+    socket.on('disconnect', ()=>{
+        io.emit('left room', {
+            username:socket.username,
+        })
+    })
+
+
     
 })
 
