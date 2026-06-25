@@ -79,6 +79,7 @@
             if(newUsername){
                 socket.emit('set username',newUsername);
                 currentUsername = newUsername;
+                username.value = "";
             }
             
         })
@@ -114,11 +115,13 @@
             li.className = 'system-message';
             if(data.oldusername === "Anonymous"){
                 li.innerText =`${data.newusername} has joined the chat`;
+                
             }
             else{
                 li.innerText = `${data.oldusername} has changed to ${data.newusername}`;
+                
             }
-            messsages.appendChild(li);
+            messages.appendChild(li);
         });
         
         socket.on('left room', (data)=>{

@@ -29,7 +29,7 @@ io.on("connection", (socket)=>{
     });
 
     socket.on('set username', (newUsername)=>{
-        const oldusername = socket.username;
+        let oldusername = socket.username;
         socket.username = newUsername;
         io.emit('change',{
             oldusername : oldusername,
